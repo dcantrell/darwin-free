@@ -1,0 +1,33 @@
+A memory usage utility for Darwin/MacOS X/NEXTSTEP (well, maybe the last one)
+Author:  David Cantrell <david.l.cantrell@gmail.com>
+
+See free.c for licensing details.
+
+http://code.google.com/p/darwin-free/
+
+COMPILATION:
+
+   You need a compiler, some headers, and a Mach-based system.  On Darwin,
+   you can type make:
+
+      make
+
+   And out will pop a 'free' executable.  On other systems, it may require
+   modification of the Makefile and/or source.
+
+INSTALLATION:
+
+   Either run 'make install' or put the free executable in a public place
+   and the man page in a sensible place.
+
+USAGE:
+
+   See free(1).
+
+NOTES:
+
+   This utility is designed to act like 'free' on Linux systems.  It is a
+   tool for displaying memory usage statistics.  Since the Mach microkernel
+   design is different than Linux, the values reported are not an exact
+   duplicate of what you can get from a Linux system.  Be sure to read the
+   man page for an explanation of the program output.

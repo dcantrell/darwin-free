@@ -1,0 +1,53 @@
+.PU
+.TH FREE 1
+.SH NAME
+free \- Display amount of free and used memory in the system
+.SH SYNOPSIS
+.ll +8
+.B free
+.RB [-b\ |\ -k\ |\ -m]\ [-s\ delay]\ [-V]\ [-h\ |\ -?]
+.SH DESCRIPTION
+.B free
+displays the total amount of free and used physical memory in the
+system, as well as the active, inactive, and wired pages.
+.SH OPTIONS
+.TP
+.B \-b\ -k\ -m
+Displays memory amounts in (b)ytes, (k)ilobytes (the default), or (m)egabytes.
+Only one of these switches may be used at a time.
+.TP
+.B \-s\ delay
+Activates continuous polling delay
+seconds apart.  You may actually specify any floating point number for delay,
+usleep(3) is used for microsecond resolution delay times.
+.TP
+.B \-V
+Displays version information.
+.TP
+.B \-h\ |\ \-?
+Displays the usage screen.  This option only shows the options available
+and nothing more.  The user is expected to refer to this man page for
+details on what the options do.
+.SH "NOTES"
+Free is modeled after the free utility on Linux systems (which comes from the
+procps source).  This version aims to offer as much of the same functionality
+that the Linux one has, but due to kernel design differences, that isn't
+always possible.
+.P
+The columns that free displays may be a bit confusing.  The first one, total,
+displays the total amount of memory for that area.  The used column displays
+the amount of total memory that is currently in use.  The free column
+displays the amount of total memory that is currently free for use.  The
+active column displays the number of active pages in the used memory.  The
+inactive column shows the number of inactive pages in the used memory.  And
+the wired column displays the number of wired down pages in the used memory.
+.P
+So for the Mem: row, you can verify usage with these formulas:
+   total = used + free
+   used = active + inactive + wired
+.SH "SEE ALSO"
+hostinfo(1), ps(1), top(1)
+.SH "AUTHORS"
+Writen by David L. Cantrell Jr. <david@@burdell.org>.
+
+Send bug reports to <david@@burdell.org>.
