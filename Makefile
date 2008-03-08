@@ -36,7 +36,7 @@ uninstall:
 	rm -rf $(PREFIX)/share/man/man1/free.1
 
 clean:
-	-rm -rf $(OBJS) free core darwin-free
+	-rm -rf $(OBJS) free core darwin-free free-$(VER).tar.gz
 
 pkg:
 	$(MAKE) install PREFIX=`pwd`/darwin-free$(PREFIX)
