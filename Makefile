@@ -16,6 +16,9 @@ CDEBUGFLAGS	= -g
 SRCS        = free.c
 OBJS        = free.o
 
+# source repository information
+SVNURL = https://darwin-free.googlecode.com/svn/trunk
+
 free: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o free
 
@@ -33,7 +36,10 @@ uninstall:
 clean:
 	-rm -rf $(OBJS) free core
 
-release:
+tag:
+	svn cp $(SVNURL)/trunk $(SVNURL)/tags/v$(VER)
+
+release: tag
 	rm -rf free-$(VER)
 	mkdir -p free-$(VER)
 	cp -p Makefile README COPYING.LIB free.1 free.c free-$(VER)
