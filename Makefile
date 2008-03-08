@@ -5,13 +5,13 @@
 # See free.c for license and copyright information.
 #
 
-VER         = 0.4.0
+VER         = 0.4.1
 
-PREFIX      = /usr/local
+PREFIX      ?= /usr/local
 
 CC          = gcc
 CFLAGS      = -O2 -Wall -std=c99 -arch ppc -arch i386 -D_FREE_VERSION=\"$(VER)\"
-CDEBUGFLAGS	= -g
+CDEBUGFLAGS = -g
 
 SRCS        = free.c
 OBJS        = free.o
@@ -25,16 +25,22 @@ free: $(OBJS)
 .c.o:
 	$(CC) $(CFLAGS) -o $@ $< -c
 
-install:
-	install -c -p -d -m 0755 -o root -g wheel free $(PREFIX)/bin
-	install -c -p -d -m 0644 -o root -g wheel free.1 $(PREFIX)/share/man/man1
+install: free
+	mkdir -p $(PREFIX)/bin
+	mkdir -p $(PREFIX)/share/man/man1
+	install -p -s -m 0755 free $(PREFIX)/bin
+	install -p -m 0644 free.1 $(PREFIX)/share/man/man1
 
 uninstall:
 	rm -rf $(PREFIX)/bin/free
 	rm -rf $(PREFIX)/share/man/man1/free.1
 
 clean:
-	-rm -rf $(OBJS) free core
+	-rm -rf $(OBJS) free core darwin-free
+
+pkg:
+	$(MAKE) install PREFIX=`pwd`/darwin-free$(PREFIX)
+	/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker -r `pwd`/darwin-free -i darwin-free -n $(VER) -t free -h system -v
 
 tag:
 	svn cp $(SVNURL)/trunk $(SVNURL)/tags/v$(VER)
