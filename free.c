@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
         /* display the memory usage statistics */
         printf("%18s %10s %10s %10s %10s %10s\n",
                "total", "used", "free", "active", "inactive", "wired");
-        printf("Mem: %13li %10li %10li %10li %10li %10li\n",
+        printf("Mem: %13llu %10llu %10llu %10llu %10llu %10llu\n",
                ms.memory.total, ms.memory.used, ms.memory.free,
                ms.memory.active, ms.memory.inactive, ms.memory.wired);
 
