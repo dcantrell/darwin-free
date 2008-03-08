@@ -39,10 +39,6 @@ typedef struct mem {
     uint64_t wired;
 } mem_t;
 
-typedef struct vm {
-    mem_t memory;
-} vm_t;
-
 void usage(char *pn) {
     printf( "Usage: %s [-b|-k|-m] [-s delay] [-V] [-h|-?]\n", basename(pn));
     return;
@@ -58,14 +54,15 @@ void checkunits(int u, char *pn) {
 }
 
 int main(int argc, char **argv) {
-    int units, poll, memsize, vmsize;
+    int units, poll;
     char c;
     kern_return_t ke = KERN_SUCCESS;
     mach_port_t host, task;
     vm_size_t hps;
     vm_statistics_data_t hs;
     struct host_basic_info hbi;
-    vm_t ms;
+    mem_t ms;
+    mach_msg_type_number_t memsz, vmsz;
 
     /* set default options */
     units = DEFAULT;
@@ -113,11 +110,11 @@ int main(int argc, char **argv) {
     task = mach_task_self();
 
     /* set some preferred sizes */
-    memsize = sizeof(hbi) / sizeof(integer_t);
-    vmsize = sizeof(hs) / sizeof(integer_t);
+    memsz = sizeof(hbi) / sizeof(integer_t);
+    vmsz = sizeof(hs) / sizeof(integer_t);
 
     /* get basic system information */
-    ke = host_info(host, HOST_BASIC_INFO, (host_info_t) &hbi, &memsize);
+    ke = host_info(host, HOST_BASIC_INFO, (host_info_t) &hbi, &memsz);
     if (ke != KERN_SUCCESS) {
         mach_error("host_info", ke);
         return EXIT_FAILURE;
@@ -132,44 +129,43 @@ int main(int argc, char **argv) {
         }
 
         /* gather virtual memory statistics */
-        ke = host_statistics(host, HOST_VM_INFO, (host_info_t) &hs, &vmsize);
+        ke = host_statistics(host, HOST_VM_INFO, (host_info_t) &hs, &vmsz);
         if (ke != KERN_SUCCESS) {
             mach_error("host_statistics", ke);
             return EXIT_FAILURE;
         }
 
         /* we have collected data, put it into our structure */
-        ms.memory.total = hbi.max_mem;
-        ms.memory.used = (hs.active_count + hs.inactive_count + hs.wire_count) *
-                         hps;
-        ms.memory.free = hs.free_count * hps;
-        ms.memory.active = hs.active_count * hps;
-        ms.memory.inactive = hs.inactive_count * hps;
-        ms.memory.wired = hs.wire_count * hps;
+        ms.total = hbi.max_mem;
+        ms.used = (hs.active_count + hs.inactive_count + hs.wire_count) * hps;
+        ms.free = hs.free_count * hps;
+        ms.active = hs.active_count * hps;
+        ms.inactive = hs.inactive_count * hps;
+        ms.wired = hs.wire_count * hps;
 
         /* convert to appropriate units (kilobytes are the default) */
         if (units == KILOBYTES) {
-            ms.memory.total /= 1024;
-            ms.memory.used /= 1024;
-            ms.memory.free /= 1024;
-            ms.memory.active /= 1024;
-            ms.memory.inactive /= 1024;
-            ms.memory.wired /= 1024;
+            ms.total /= 1024;
+            ms.used /= 1024;
+            ms.free /= 1024;
+            ms.active /= 1024;
+            ms.inactive /= 1024;
+            ms.wired /= 1024;
         } else if (units == MEGABYTES) {
-            ms.memory.total /= 1048576;
-            ms.memory.used /= 1048576;
-            ms.memory.free /= 1048576;
-            ms.memory.active /= 1048576;
-            ms.memory.inactive /= 1048576;
-            ms.memory.wired /= 1048576;
+            ms.total /= 1048576;
+            ms.used /= 1048576;
+            ms.free /= 1048576;
+            ms.active /= 1048576;
+            ms.inactive /= 1048576;
+            ms.wired /= 1048576;
         }
 
         /* display the memory usage statistics */
         printf("%18s %10s %10s %10s %10s %10s\n",
                "total", "used", "free", "active", "inactive", "wired");
         printf("Mem: %13llu %10llu %10llu %10llu %10llu %10llu\n",
-               ms.memory.total, ms.memory.used, ms.memory.free,
-               ms.memory.active, ms.memory.inactive, ms.memory.wired);
+               ms.total, ms.used, ms.free,
+               ms.active, ms.inactive, ms.wired);
 
         /* does the loop continue? */
         if (poll != 0) {
