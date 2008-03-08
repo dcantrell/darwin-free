@@ -17,7 +17,7 @@ SRCS        = free.c
 OBJS        = free.o
 
 # source repository information
-SVNURL = https://darwin-free.googlecode.com/svn/trunk
+SVNURL = https://darwin-free.googlecode.com/svn
 
 free: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o free
