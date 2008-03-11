@@ -43,7 +43,7 @@ pkg:
 	/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker -r `pwd`/darwin-free -i darwin-free -n $(VER) -t free -h system -v
 
 tag:
-	svn cp $(SVNURL)/trunk $(SVNURL)/tags/v$(VER)
+	svn cp -m "Tag version $(VER)." $(SVNURL)/trunk $(SVNURL)/tags/v$(VER)
 
 release: tag
 	rm -rf free-$(VER)
