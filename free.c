@@ -24,37 +24,23 @@
 #include <mach/host_info.h>
 #include <mach/host_priv.h>
 
+#include "free.h"
+
 extern char *optarg;
 extern int optind;
 
-enum { DEFAULT, BYTES, KILOBYTES, MEGABYTES };
-enum { OFF, ON };
-
-typedef struct mem {
-    uint64_t total;
-    uint64_t used;
-    uint64_t free;
-    uint64_t active;
-    uint64_t inactive;
-    uint64_t wired;
-} mem_t;
-
-void usage(char *pn) {
-    printf( "Usage: %s [-b|-k|-m] [-s delay] [-V] [-h|-?]\n", basename(pn));
-    return;
-}
-
-void checkunits(int u, char *pn) {
-    if(u != DEFAULT) {
-        fprintf(stderr, "You may only choose one of the following unit options:  -b, -k, or -m\n");
+static void set_units(int *units, int type) {
+    if (*units != -1) {
+        fprintf(stderr, COMBINED_UNIT_OPTIONS);
         fflush(stderr);
-        usage(pn);
         exit(EXIT_FAILURE);
     }
+
+    *units = type;
 }
 
 int main(int argc, char **argv) {
-    int units, poll;
+    int poll = 0, div = 1, units = -1;
     char c;
     kern_return_t ke = KERN_SUCCESS;
     mach_port_t host, task;
@@ -64,45 +50,31 @@ int main(int argc, char **argv) {
     mem_t ms;
     mach_msg_type_number_t memsz, vmsz;
 
-    /* set default options */
-    units = DEFAULT;
-    poll = 0;
- 
     /* parse our command line options */
     while ((c = getopt(argc, argv, "bkms:Vh?")) != -1) {
-        switch (c) {
-            case 'b':
-                checkunits(units, argv[0]);
-                units = BYTES;
-                break;
-            case 'k':
-                checkunits(units, argv[0]);
-                units = KILOBYTES;
-                break;
-            case 'm':
-                checkunits(units, argv[0]);
-                units = MEGABYTES;
-                break;
-            case 's':
-                poll = atoi(optarg);
-                break;
-            case 'V':
-                printf("free version %s\n", _FREE_VERSION);
+        if (c == 'b') {
+            set_units(&units, BYTES);
+        } else if (c == 'k') {
+            set_units(&units, KILOBYTES);
+        } else if (c == 'm') {
+            set_units(&units, MEGABYTES);
+        } else if (c == 's') {
+            poll = atoi(optarg);
+        } else if (c == 'V') {
+            printf("free version %s\n", _FREE_VERSION);
+            return EXIT_SUCCESS;
+        } else {
+            printf(FREE_USAGE, basename(argv[0]));
+
+            if (c == 'h' || c == '?') {
                 return EXIT_SUCCESS;
-                break;
-            case 'h':
-            case '?':
-            default:
-                usage(argv[0]);
-                return EXIT_FAILURE;
+            }
+
+            return EXIT_FAILURE;
         }
     }
 
-    argc -= optind;
-    argv += optind;
-
-    /* use kilobytes if the user didn't specify a unit */
-    if (units == DEFAULT) {
+    if (units == -1) {
         units = KILOBYTES;
     }
 
@@ -135,30 +107,21 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
         }
 
-        /* we have collected data, put it into our structure */
-        ms.total = hbi.max_mem;
-        ms.used = (hs.active_count + hs.inactive_count + hs.wire_count) * hps;
-        ms.free = hs.free_count * hps;
-        ms.active = hs.active_count * hps;
-        ms.inactive = hs.inactive_count * hps;
-        ms.wired = hs.wire_count * hps;
-
-        /* convert to appropriate units (kilobytes are the default) */
+        /* select divisor */
         if (units == KILOBYTES) {
-            ms.total /= 1024;
-            ms.used /= 1024;
-            ms.free /= 1024;
-            ms.active /= 1024;
-            ms.inactive /= 1024;
-            ms.wired /= 1024;
+            div = 1024;
         } else if (units == MEGABYTES) {
-            ms.total /= 1048576;
-            ms.used /= 1048576;
-            ms.free /= 1048576;
-            ms.active /= 1048576;
-            ms.inactive /= 1048576;
-            ms.wired /= 1048576;
+            div = 1048576;
         }
+
+        /* we have collected data, put it into our structure */
+        ms.total = hbi.max_mem / div;
+        ms.used = ((hs.active_count + hs.inactive_count + hs.wire_count)
+                   * hps) / div;
+        ms.free = (hs.free_count * hps) / div;
+        ms.active = (hs.active_count * hps) / div;
+        ms.inactive = (hs.inactive_count * hps) / div;
+        ms.wired = (hs.wire_count * hps) / div;
 
         /* display the memory usage statistics */
         printf("%18s %10s %10s %10s %10s %10s\n",

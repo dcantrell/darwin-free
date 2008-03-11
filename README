@@ -1,7 +1,7 @@
-A memory usage utility for Darwin/MacOS X/NEXTSTEP (well, maybe the last one)
+A memory usage utility for MacOS X
 Author:  David Cantrell <david.l.cantrell@gmail.com>
 
-See free.c for licensing details.
+See COPYING.LIB for licensing details.
 
 http://code.google.com/p/darwin-free/
 
