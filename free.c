@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
         } else if (c == 's') {
             poll = atoi(optarg);
         } else if (c == 'V') {
-            printf("free version %s\n", _FREE_VERSION);
+            printf("darwin-free version %s\n", _FREE_VERSION);
             return EXIT_SUCCESS;
         } else {
             printf(FREE_USAGE, basename(argv[0]));
