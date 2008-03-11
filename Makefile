@@ -48,6 +48,6 @@ tag:
 release: tag
 	rm -rf free-$(VER)
 	mkdir -p free-$(VER)
-	cp -p Makefile README COPYING.LIB free.1 free.c free-$(VER)
+	cp -p Makefile README COPYING.LIB free.1 free.c free.h free-$(VER)
 	tar -cvf - free-$(VER) | gzip -9c > free-$(VER).tar.gz
 	rm -rf free-$(VER)
