@@ -5,7 +5,7 @@
 # See free.c for license and copyright information.
 #
 
-VER         = 0.4.1
+VER         = 0.5.0
 
 PREFIX      ?= /usr/local
 
