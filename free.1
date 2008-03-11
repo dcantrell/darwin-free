@@ -1,53 +1,77 @@
-.PU
-.TH FREE 1
-.SH NAME
-free \- Display amount of free and used memory in the system
-.SH SYNOPSIS
-.ll +8
-.B free
-.RB [-b\ |\ -k\ |\ -m]\ [-s\ delay]\ [-V]\ [-h\ |\ -?]
-.SH DESCRIPTION
-.B free
-displays the total amount of free and used physical memory in the
-system, as well as the active, inactive, and wired pages.
-.SH OPTIONS
-.TP
-.B \-b\ -k\ -m
-Displays memory amounts in (b)ytes, (k)ilobytes (the default), or (m)egabytes.
-Only one of these switches may be used at a time.
-.TP
-.B \-s\ delay
-Activates continuous polling delay
-seconds apart.  You may actually specify any floating point number for delay,
-usleep(3) is used for microsecond resolution delay times.
-.TP
-.B \-V
-Displays version information.
-.TP
-.B \-h\ |\ \-?
-Displays the usage screen.  This option only shows the options available
-and nothing more.  The user is expected to refer to this man page for
-details on what the options do.
-.SH "NOTES"
-Free is modeled after the free utility on Linux systems (which comes from the
-procps source).  This version aims to offer as much of the same functionality
-that the Linux one has, but due to kernel design differences, that isn't
-always possible.
-.P
+.Dd March 10, 2008
+.Dt FREE 1
+.Os
+.Sh NAME
+.Nm free
+.Nd Display the amount of free and used memory in the system
+.Sh SYNOPSIS
+.Nm
+.Fl b
+.Op Fl s Ar delay
+.Nm
+.Fl k
+.Op Fl s Ar delay
+.Nm
+.Fl m
+.Op Fl m Ar delay
+.Nm
+.Fl Vh?
+.Sh DESCRIPTION
+The
+.Nm
+utility displays the total amount of free and used physical memory in the
+system, as well as the active, inactive, and wired page counts.
+.Pp
+The following options are available:
+.Bl -tag -width indent
+.It Fl b
+Display memory sizes in bytes.
+.It Fl k
+Display memory sizes in kilobytes (default if no options given).
+.It Fl m
+Display memory sizes in megabytes.
+.It Fl s Ar delay
+Sleep for
+.Ar delay
+seconds before display memory statistics again.  This option causes free to
+continuously poll the system until SIGINT is given.
+.It Fl V
+Display version information.
+.El
+.Pp
+The
+.Fl h
+and
+.Fl ?
+options display usage information.
+.Sh NOTES
+.Pp
+.Nm
+is modeled after the free utility on Linux systems (the one from the procps
+project).  This version aims to offer similar functionality, but due to
+design differences between Linux and Darwin, that is not always possible.
+.Pp
 The columns that free displays may be a bit confusing.  The first one, total,
-displays the total amount of memory for that area.  The used column displays
-the amount of total memory that is currently in use.  The free column
-displays the amount of total memory that is currently free for use.  The
-active column displays the number of active pages in the used memory.  The
-inactive column shows the number of inactive pages in the used memory.  And
-the wired column displays the number of wired down pages in the used memory.
-.P
-So for the Mem: row, you can verify usage with these formulas:
-   total = used + free
-   used = active + inactive + wired
-.SH "SEE ALSO"
-hostinfo(1), ps(1), top(1)
-.SH "AUTHORS"
-Writen by David L. Cantrell Jr. <david@@burdell.org>.
-
-Send bug reports to <david@@burdell.org>.
+display the total amount of memory for that area.  The used column displays
+the amount of total memory that is currently in use.  The free column displays
+the amount of total memory that is currently in use.  The active column displays
+the number of active pages in the used memory.  The inactive column shows the
+number of inactive pages in the used memory.  And the wired column displays
+the number of wired down pages in the used memory.
+.Pp
+The Mem: row uses these formulas:
+.Dl total = used + free
+.Dl used = active + inactive + wired
+.Sh SEE ALSO
+.Xr hostinfo 1 ,
+.Xr ps 1 ,
+.Xr top 1
+.Sh BUGS
+.Pp
+Report bugs at http://code.google.com/p/darwin-free/
+.Sh AUTHORS
+.Pp
+Written by David Cantrell <david.l.cantrell@gmail.com>
+.Pp
+Contributions from Logan Johnson <logan.johnson@gmail.com> and
+Jim Bair <tseuhpsyde@gmail.com>
