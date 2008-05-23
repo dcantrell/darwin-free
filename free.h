@@ -4,7 +4,6 @@
  *
  * by:  David Cantrell <david.l.cantrell@gmail.com>
  * Copyright (C) 2008, David Cantrell, Honolulu, HI, USA.
- * All rights reserved.
  *
  * Licensed under the GNU Lesser General Public License version 2.1 or later.
  * See COPYING.LIB for licensing details.
