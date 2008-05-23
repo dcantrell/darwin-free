@@ -5,8 +5,10 @@
 # See free.c for license and copyright information.
 #
 
-VER         = 0.5.0
+PKG         = darwin-free
+VER         = 0.5.1
 
+CWD         = $(shell pwd)
 PREFIX      ?= /usr/local
 
 CC          = gcc
@@ -15,6 +17,10 @@ CDEBUGFLAGS = -g
 
 SRCS        = free.c
 OBJS        = free.o
+
+# Packaging commands
+PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
+HDIUTIL=/usr/bin/hdiutil
 
 # source repository information
 SVNURL = https://darwin-free.googlecode.com/svn
@@ -36,11 +42,30 @@ uninstall:
 	rm -rf $(PREFIX)/share/man/man1/free.1
 
 clean:
-	-rm -rf $(OBJS) free core darwin-free free-$(VER).tar.gz
+	-rm -rf $(OBJS) free core free-$(VER).tar.gz
+	sudo rm -rf $(PKG) $(PKG)-$(VER).pkg $(PKG).dmg $(PKG)-$(VER)
 
 pkg:
-	$(MAKE) install PREFIX=`pwd`/darwin-free$(PREFIX)
-	/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker -r `pwd`/darwin-free -i darwin-free -n $(VER) -t free -h system -v
+	$(MAKE) install PREFIX=$(CWD)/$(PKG)$(PREFIX)
+	find $(CWD)/$(PKG) -type d | xargs sudo chmod 0755
+	sudo chmod 2755 $(CWD)/$(PKG)/usr
+	sudo chown -R root $(CWD)/$(PKG)
+	sudo chgrp -R wheel $(CWD)/$(PKG)
+	sudo $(PACKAGEMAKER) \
+		--root $(CWD)/$(PKG)$(PREFIX)/ \
+		--resources $(CWD)/Resources/ \
+		--out $(PKG)-$(VER).pkg \
+		--id org.burdell.pkg.$(PKG)-$(VER) \
+		--title $(PKG) --domain system --version
+	find $(CWD)/$(PKG)-$(VER).pkg -name ".svn" | xargs sudo rm -rf
+	mkdir $(PKG)-$(VER)
+	sudo mv *.pkg $(PKG)-$(VER)
+	sudo $(HDIUTIL) create \
+		-verbose \
+		-srcfolder $(CWD)/$(PKG)-$(VER) \
+		-nospotlight \
+		-format UDBZ \
+		$(PKG).dmg
 
 tag:
 	svn cp -m "Tag version $(VER)." $(SVNURL)/trunk $(SVNURL)/tags/v$(VER)
