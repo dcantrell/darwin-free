@@ -12,7 +12,7 @@ CWD         = $(shell pwd)
 PREFIX      ?= /usr/local
 
 CC          = gcc
-CFLAGS      = -O2 -Wall -std=c99 -arch ppc -arch i386 -D_FREE_VERSION=\"$(VER)\"
+CFLAGS      = -O2 -Wall -std=c99 -D_FREE_VERSION=\"$(VER)\"
 CDEBUGFLAGS = -g
 
 SRCS        = free.c
