@@ -5,6 +5,14 @@ See COPYING.LIB for licensing details.
 
 http://code.google.com/p/darwin-free/
 
+HOMEBREW:
+
+   A Homebrew formula is available at https://github.com/nickolasburr/homebrew-pfa.
+   To install via Homebrew, run the following:
+
+   brew tap nickolasburr/pfa
+   brew install darwin-free
+
 COMPILATION:
 
    You need a compiler, some headers, and a Mach-based system.  On Darwin,
