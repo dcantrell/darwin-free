@@ -1,0 +1,6 @@
+---
+os: osx
+language: c
+
+script:
+  - make
