@@ -22,9 +22,6 @@ OBJS        = free.o
 PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
 HDIUTIL=/usr/bin/hdiutil
 
-# source repository information
-SVNURL = https://darwin-free.googlecode.com/svn
-
 free: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o free
 
@@ -57,7 +54,7 @@ pkg:
 		--out $(PKG)-$(VER).pkg \
 		--id org.burdell.pkg.$(PKG)-$(VER) \
 		--title $(PKG) --domain system --version
-	find $(CWD)/$(PKG)-$(VER).pkg -name ".svn" | xargs sudo rm -rf
+	find $(CWD)/$(PKG)-$(VER).pkg -name ".git" | xargs sudo rm -rf
 	mkdir $(PKG)-$(VER)
 	sudo mv *.pkg $(PKG)-$(VER)
 	sudo $(HDIUTIL) create \
@@ -68,7 +65,7 @@ pkg:
 		$(PKG).dmg
 
 tag:
-	svn cp -m "Tag version $(VER)." $(SVNURL)/trunk $(SVNURL)/tags/v$(VER)
+	git tag -s -m "v$(VER)" v$(VER)
 
 release: tag
 	rm -rf free-$(VER)
