@@ -50,13 +50,15 @@ int main(int argc, char **argv) {
     mach_msg_type_number_t memsz, vmsz;
 
     /* parse our command line options */
-    while ((c = getopt(argc, argv, "bkms:Vh?")) != -1) {
+    while ((c = getopt(argc, argv, "bkmgs:Vh?")) != -1) {
         if (c == 'b') {
             set_units(&units, BYTES);
         } else if (c == 'k') {
             set_units(&units, KILOBYTES);
         } else if (c == 'm') {
             set_units(&units, MEGABYTES);
+        } else if (c == 'g') {
+            set_units(&units, GIGABYTES);
         } else if (c == 's') {
             poll = atoi(optarg);
         } else if (c == 'V') {
@@ -110,7 +112,9 @@ int main(int argc, char **argv) {
         if (units == KILOBYTES) {
             div = 1024;
         } else if (units == MEGABYTES) {
-            div = 1048576;
+            div = 1048576;    // 1024 ^ 2
+        } else if (units == GIGABYTES) {
+            div = 1073741824; // 1024 ^ 3
         }
 
         /* we have collected data, put it into our structure */
